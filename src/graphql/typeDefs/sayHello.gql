@@ -1,0 +1,9 @@
+input SayHelloInput {
+  name: String
+}
+type SayHello {
+  message: String!
+}
+type Query {
+  sayHello(input: SayHelloInput!): SayHello!
+}

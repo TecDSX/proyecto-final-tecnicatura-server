@@ -1,1 +1,3 @@
-console.log('Hello word');
+import { main } from './bin';
+
+main();
