@@ -1,0 +1,31 @@
+input CreateUserInput {
+  username: String!
+  email: String!
+  password: String!
+  active: Boolean
+  privilege: String
+}
+input LoginInput {
+  email: String!
+  password: String!
+}
+type User {
+  _id: ID!
+  username: String!
+  email: String!
+  password: String!
+  active: Boolean!
+  privilege: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+type AuthPayLoad {
+  token: String!
+}
+type Query {
+  getUsers: [User]!
+}
+type Mutation {
+  createUser(input: CreateUserInput): User!
+  login(input: LoginInput!): AuthPayLoad!
+}
