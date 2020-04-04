@@ -48,9 +48,7 @@ export default {
       return await User.findOneAndUpdate(
         { _id },
         { $set: input },
-        (err, data) => {
-          return Promise.all([err, data]);
-        }
+        (err, data) => Promise.all([err, data])
       );
     },
   },
