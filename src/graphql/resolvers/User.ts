@@ -13,18 +13,14 @@ export default {
       _: any,
       __: any,
       { models: { User } }: { models: tModels }
-    ) => {
-      return await User.find();
-    },
+    ) => await User.find(),
   },
   Mutation: {
     createUser: async (
       _: any,
       { input }: iCreateUserInput,
       { models: { User } }: { models: tModels }
-    ) => {
-      return await User.create({ ...input, password: encrypt(input.password) });
-    },
+    ) => await User.create({ ...input, password: encrypt(input.password) }),
     login: async (
       _: any,
       { input }: iLoginInput,
