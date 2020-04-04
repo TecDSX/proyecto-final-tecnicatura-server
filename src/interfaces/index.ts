@@ -1,4 +1,6 @@
 import { models } from '../bin';
+type privileges = 'user' | 'admin';
+type states = 'connected' | 'disconnected';
 export interface iSayHelloInput {
   input: {
     name?: string;
@@ -13,7 +15,19 @@ export interface iCreateUserInput {
     email: string;
     password: string;
     active?: boolean;
-    privilege?: string;
+    privilege?: privileges;
+    state?: states;
+  };
+}
+export interface iUpdateUserInput {
+  _id: string;
+  input: {
+    username?: string;
+    email?: string;
+    password?: string;
+    active?: boolean;
+    privilege?: privileges;
+    state?: states;
   };
 }
 export interface iLoginInput {

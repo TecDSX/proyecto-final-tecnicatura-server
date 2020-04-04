@@ -4,6 +4,7 @@ import {
   iCreateUserInput,
   iLogin,
   iLoginInput,
+  iUpdateUserInput,
 } from '../../interfaces/index';
 import { encrypt, createToken } from '../../utils/utils';
 export default {
@@ -22,26 +23,35 @@ export default {
       { input }: iCreateUserInput,
       { models: { User } }: { models: tModels }
     ) => {
-      const { password, ...data } = input;
-      return await User.create({ ...data, password: encrypt(password) });
+      return await User.create({ ...input, password: encrypt(input.password) });
     },
     login: async (
       _: any,
       { input }: iLoginInput,
       { models: { User } }: { models: tModels }
     ): Promise<iLogin> => {
-      const { email, password: pass } = input;
-      const user = await User.findOne({
-        email,
-        password: encrypt(pass).toString(),
-      });
+      input.password = encrypt(input.password).toString();
+      const user = await User.findOne(input);
       if (!user) throw new Error('Invalid Login');
       if (!user.active) throw new Error('Your account is not activated yet');
-      const { password, ...data } = user;
-      const token = await createToken({ ...data, token: password });
+      const token = await createToken({ ...user, token: user.password });
       return {
         token,
       };
+    },
+    updateUser: async (
+      _: any,
+      { input, _id }: iUpdateUserInput,
+      { models: { User } }: { models: tModels }
+    ) => {
+      if (input.password) input.password = encrypt(input.password).toString();
+      return await User.findOneAndUpdate(
+        { _id },
+        { $set: input },
+        (err, data) => {
+          return Promise.all([err, data]);
+        }
+      );
     },
   },
 };

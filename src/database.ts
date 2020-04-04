@@ -10,7 +10,7 @@ export const createConnection = async (): Promise<void> => {
     }${host}:${port}/${database}`,
     {
       useCreateIndex: true,
-      useFindAndModify: true,
+      useFindAndModify: false,
       useNewUrlParser: true,
       useUnifiedTopology: true,
     }

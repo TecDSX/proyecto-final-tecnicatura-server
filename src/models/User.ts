@@ -7,6 +7,7 @@ import {
   Type,
 } from 'ts-mongoose';
 const privileges = ['user', 'admin'] as const;
+const states = ['connected', 'disconnected'] as const;
 export const UserSchema = createSchema(
   {
     username: Type.string({ required: true }),
@@ -17,6 +18,11 @@ export const UserSchema = createSchema(
       required: true,
       enum: privileges,
       default: 'user',
+    }),
+    state: Type.string({
+      required: true,
+      default: 'disconnected',
+      enum: states,
     }),
   },
   { timestamps: { createdAt: true, updatedAt: true } }
