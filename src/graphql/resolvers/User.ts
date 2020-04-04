@@ -7,7 +7,6 @@ import {
   iUpdateUserInput,
 } from '../../interfaces/index';
 import { encrypt, createToken } from '../../utils/utils';
-import { UserProps } from '../../models/User';
 export default {
   Query: {
     getUsers: async (
