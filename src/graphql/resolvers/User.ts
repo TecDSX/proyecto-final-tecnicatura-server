@@ -7,6 +7,7 @@ import {
   iUpdateUserInput,
 } from '../../interfaces/index';
 import { encrypt, createToken } from '../../utils/utils';
+import { UserProps } from '../../models/User';
 export default {
   Query: {
     getUsers: async (
@@ -30,9 +31,8 @@ export default {
       const user = await User.findOne(input);
       if (!user) throw new Error('Invalid Login');
       if (!user.active) throw new Error('Your account is not activated yet');
-      const token = await createToken({ ...user, token: user.password });
       return {
-        token,
+        token: await createToken({ ...user, token: user.password }),
       };
     },
     updateUser: async (
