@@ -1,0 +1,35 @@
+input EventInput {
+  name: String! 
+  location: String!
+  startDate: DateTime!
+  endDate: DateTime!
+  description: String!
+  guestsNumber: Int!
+  state:  EventStates!
+}
+
+enum EventStates {
+  active
+  cancelled 
+  hide 
+  finalized
+}
+
+type Event {
+  _id: ID!
+  name: String! 
+  location: String!
+  startDate: DateTime!
+  endDate: DateTime!
+  description: String!
+  guestsNumber: Int!
+  state:  EventStates!
+}
+
+type Query {
+  getEvents: [Event]!  
+}
+
+type Mutation {
+  createEvent(input: EventInput): Event! 
+}

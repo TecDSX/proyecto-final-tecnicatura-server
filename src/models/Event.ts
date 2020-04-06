@@ -7,7 +7,7 @@ import {
   Type,
 } from 'ts-mongoose';
 
-const EVENT_STATUS = ['active', 'cancelled', 'hide', 'finalized'];
+const EVENT_STATES = ['active', 'cancelled', 'hide', 'finalized'];
 
 export const EventSchema = createSchema(
   {
@@ -15,18 +15,15 @@ export const EventSchema = createSchema(
     location: Type.string({ required: true }),
     startDate: Type.date({ required: true, index: true }),
     endDate: Type.date({ required: true, index: true }),
-    startHour: Type.date({ required: true }),
-    endHour: Type.date({ required: true }),
     description: Type.string({ required: true }),
     guestsNumber: Type.number({ required: true }),
-    created: Type.date({ required: true, index: true }),
     state: Type.string({
       required: true,
-      enum: EVENT_STATUS,
-      default: EVENT_STATUS[2],
+      enum: EVENT_STATES,
+      default: EVENT_STATES[2],
     }),
   },
-  { timestamps: { createdAt: true, updateAt: true } }
+  { timestamps: { createdAt: true, updatedAt: true } }
 );
 
 export const Event = typedModel('Event', EventSchema);

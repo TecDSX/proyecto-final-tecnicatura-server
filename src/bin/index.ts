@@ -4,11 +4,13 @@ import { typeDefs } from '../graphql/typeDefs/index';
 import { config } from '../config';
 import { createConnection } from '../database';
 import { User } from '../models/User';
+import { Event } from '../models/Event';
 const {
   server: { port },
 } = config;
 export const models = {
   User,
+  Event
 };
 const graphqlServer = new GraphQLServer({
   resolvers,

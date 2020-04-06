@@ -1,14 +1,15 @@
 import { models } from '../bin';
-type privileges = 'user' | 'admin';
-type states = 'connected' | 'disconnected';
+type userPrivileges = 'user' | 'admin';
+type userStates = 'connected' | 'disconnected';
+type eventStates = 'active' | 'cancelled' | 'hide' | 'finalized';
 export interface iCreateUserInput {
   input: {
     username: string;
     email: string;
     password: string;
     active?: boolean;
-    privilege?: privileges;
-    state?: states;
+    privilege?: userPrivileges;
+    state?: userStates;
   };
 }
 export interface iUpdateUserInput {
@@ -18,8 +19,8 @@ export interface iUpdateUserInput {
     email?: string;
     password?: string;
     active?: boolean;
-    privilege?: privileges;
-    state?: states;
+    privilege?: userPrivileges;
+    state?: userStates;
   };
 }
 export interface iLoginInput {
@@ -30,5 +31,16 @@ export interface iLoginInput {
 }
 export interface iLogin {
   token: string;
+}
+export interface iEventInput {
+  input: {
+    name: string;
+    location: string;
+    startDate: Date;
+    endDate: Date;
+    description: string;
+    guestsNumber: number;
+    state: eventStates;
+  };
 }
 export type tModels = typeof models;
