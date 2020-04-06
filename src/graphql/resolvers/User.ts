@@ -30,8 +30,10 @@ export default {
       const user = await User.findOne(input);
       if (!user) throw new Error('Invalid Login');
       if (!user.active) throw new Error('Your account is not activated yet');
+      // @ts-ignore
+      const { password, ...data } = user._doc;
       return {
-        token: await createToken({ ...user, token: user.password }),
+        token: await createToken({ ...data, token: password }),
       };
     },
     updateUser: async (
