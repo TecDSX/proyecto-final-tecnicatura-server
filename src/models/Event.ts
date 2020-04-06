@@ -7,7 +7,7 @@ import {
   Type,
 } from 'ts-mongoose';
 
-const EVENT_STATUS = ['active', 'cancelled', 'hide', 'finalized'];
+const EVENT_STATUS = ['active', 'cancelled', 'hide', 'finalized'] as const;
 
 export const EventSchema = createSchema(
   {
