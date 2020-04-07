@@ -25,7 +25,7 @@ const existsUser = async (User: any, userId: string) => {
 const userFriendToSelf = (userId: any, friendsIdArray: any[]) => {
   friendsIdArray.map((id: any) => {
     // eslint-disable-next-line eqeqeq
-    if (userId == id) throw new Error('User not can be friend to self');
+    if (userId == id) throw new Error('User can not be friend to self');
   });
 };
 const existsFriendsInUser = async (
