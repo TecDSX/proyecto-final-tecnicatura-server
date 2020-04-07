@@ -24,6 +24,7 @@ export const UserSchema = createSchema(
       default: 'disconnected',
       enum: states,
     }),
+    friends: Type.array({ required: true, default: [] }).of(Type.objectId()),
   },
   { timestamps: { createdAt: true, updatedAt: true } }
 );
