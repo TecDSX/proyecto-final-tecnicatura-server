@@ -1,4 +1,6 @@
+/* eslint-disable no-unused-vars */
 import { models } from '../bin';
+import { UserProps } from '../models/User';
 type privileges = 'user' | 'admin';
 type states = 'connected' | 'disconnected';
 export interface iCreateUserInput {
@@ -9,6 +11,7 @@ export interface iCreateUserInput {
     active?: boolean;
     privilege?: privileges;
     state?: states;
+    friends?: UserProps[];
   };
 }
 export interface iUpdateUserInput {
@@ -20,6 +23,7 @@ export interface iUpdateUserInput {
     active?: boolean;
     privilege?: privileges;
     state?: states;
+    friends?: UserProps[];
   };
 }
 export interface iLoginInput {
@@ -30,5 +34,13 @@ export interface iLoginInput {
 }
 export interface iLogin {
   token: string;
+}
+export interface iAddFriend {
+  _id: string;
+  friendId: string;
+}
+export interface iAddFriends {
+  _id: string;
+  friendsIdArray: string[];
 }
 export type tModels = typeof models;
