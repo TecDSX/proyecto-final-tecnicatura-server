@@ -1,0 +1,36 @@
+input CreateUserInput {
+  username: String!
+  email: String!
+  password: String!
+  active: Boolean
+}
+input LoginInput {
+  email: String!
+  password: String!
+}
+input UpdateUserInput {
+  username: String
+  email: String
+  password: String
+  active: Boolean
+}
+type AuthPayLoad {
+  token: String!
+}
+type User {
+  _id: ID!
+  username: String!
+  email: String!
+  password: String!
+  active: Boolean!
+}
+type Query {
+  getUsers: [User]!
+}
+type Mutation {
+  login(input: LoginInput!): AuthPayLoad!
+  disconnect: Boolean!
+  createUser(input: CreateUserInput!): User!
+  updateUser(userId: ID!, input: UpdateUserInput!): User!
+  deleteUser: Boolean!
+}
