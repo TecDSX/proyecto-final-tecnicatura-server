@@ -1,3 +1,4 @@
+type UserStates = 'connected' | 'disconnect';
 export type LoginInput = {
   input: {
     email: string;
@@ -10,18 +11,18 @@ export type CreateUserInput = {
     email: string;
     password: string;
     active?: boolean;
+    state?: UserStates;
   };
 };
-export type UpdateUser = (
-  patern: any,
-  args: {
-    userId: string;
-    input: {
-      username?: string;
-      email?: string;
-      password?: string;
-      active?: boolean;
-    };
-  },
-  context: any
-) => undefined;
+export type UpdateUserInput = {
+  userId: string;
+  input: {
+    username?: string;
+    email?: string;
+    password?: string;
+    active?: boolean;
+    state?: UserStates;
+  };
+};
+export type SetUserStateInput = { userId: string; state: UserStates };
+export type DeleteUserInput = { userId: string };
