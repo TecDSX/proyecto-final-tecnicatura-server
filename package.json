@@ -6,9 +6,9 @@
   "scripts": {
     "lint": "eslint . --ext .js,.ts,.tsx,.jsx",
     "lint:fix": "eslint . --ext .js,.ts,.tsx,.jsx --fix",
-    "dev": "ts-node-dev -P ./tsconfig.json --respawn ./src/index.ts",
+    "dev": "ts-node-dev -P ./tsconfig.json --respawn ./src",
     "build": "tsc -p ./tsconfig.json && cpy ./src/graphql/typeDefs/**.gql ./dist/graphql/typeDefs/",
-    "start": "node ./dist/index.js"
+    "start": "node ./dist"
   },
   "husky": {
     "hooks": {
