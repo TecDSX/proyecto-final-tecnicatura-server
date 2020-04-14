@@ -23,6 +23,8 @@ type User {
   email: String!
   password: String!
   active: Boolean!
+  updatedAt: DateTime!
+  createdAt: DateTime!
 }
 type Query {
   getUsers: [User]!

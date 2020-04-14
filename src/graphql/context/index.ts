@@ -11,6 +11,6 @@ type reqRes = {
   res: Response;
 };
 type contextBody = typeof contextReturn & reqRes;
-export type tContext = contextBody;
+export type Context = contextBody;
 export const context = ({ req, res }: { req: Request; res: Response }) =>
   contextReturn;
