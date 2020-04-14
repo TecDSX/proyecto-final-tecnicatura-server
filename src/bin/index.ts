@@ -14,7 +14,6 @@ const graphqlServer = new GraphQLServer({
 });
 export const main = async (): Promise<void> => {
   await createConnection();
-  console.log(`DataBase is connected`);
   await graphqlServer.start({ port });
   console.log(`Server running at port ${port}`);
 };
