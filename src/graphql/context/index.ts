@@ -1,6 +1,11 @@
 // eslint-disable-next-line no-unused-vars
 import { Request, Response } from 'express';
-const contextReturn = {};
+import { User } from '../../models/User';
+const contextReturn = {
+  models: {
+    User,
+  },
+};
 type reqRes = {
   req: Request;
   res: Response;
