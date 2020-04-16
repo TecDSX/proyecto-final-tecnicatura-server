@@ -5,7 +5,7 @@ import {
   SetEventStateInput,
   CreateEventInput,
   UpdateEventInput,
-  DeleteEventInput
+  DeleteEventInput,
   // inputs
 } from '../../interfaces';
 
@@ -20,7 +20,6 @@ export default {
       await Event.find({ active: true }),
   },
   Mutation: {
-
     setEventState: async (
       _: any,
       { state, eventId }: SetEventStateInput,
