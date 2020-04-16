@@ -1,0 +1,48 @@
+enum EventStates {  
+  active
+  finalized
+  cancelled 
+  hidden
+}
+input CreateEventInput {
+  name: String!
+  location: String!
+  start: String!
+  end: String!
+  description: String!
+  guestsNumber: Int!
+  active: Boolean
+  state: EventStates
+}
+input UpdateEventInput {
+  name: String!
+  location: String!
+  start: String!
+  end: String!
+  description: String!
+  guestsNumber: Int!
+  active: Boolean
+  state: EventStates
+}
+type Event {
+  _id: ID!
+  name: String!
+  location: String!
+  start: DateTime!
+  end: DateTime!
+  description: String!
+  guestsNumber: Int!
+  state: EventStates!
+  active: Boolean!
+  updatedAt: DateTime!
+  createdAt: DateTime!
+}
+type Query {
+  getEvents: [Event]!
+}
+type Mutation {
+  setEventState(eventId: ID!, state: EventStates!): Boolean!
+  createEvent(input: CreateEventInput!): Event!
+  updateEvent(eventId: ID!, input: UpdateEventInput!): Event!
+  deleteEvent(eventId: ID!): Boolean!
+}
