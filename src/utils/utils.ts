@@ -14,10 +14,10 @@ export const createToken = async (data: any) =>
 
 // Handlers
 
-export const EventHandlerFinallizer = async () => {
+export const EventHandlerFinallizer = () => {
   setInterval(async () => {
-    const dateNow = new Date().toISOString();
-    await Event.update(
+    const dateNow = new Date();
+    await Event.updateMany(
       { state: 'active', end: { $lte: dateNow } },
       { $set: { state: 'finalized' } }
     );

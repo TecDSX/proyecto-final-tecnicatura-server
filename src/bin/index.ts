@@ -16,7 +16,7 @@ const graphqlServer = new GraphQLServer({
 });
 export const main = async (): Promise<void> => {
   await createConnection();
-  await EventHandlerFinallizer();
+  EventHandlerFinallizer();
   await graphqlServer.start({ port });
   console.log(`Server running at port ${port}`);
 };
