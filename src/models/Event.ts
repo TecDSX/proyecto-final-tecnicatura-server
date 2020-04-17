@@ -4,8 +4,8 @@ export const EventSchema = createSchema(
   {
     name: Type.string({ required: true, index: true }),
     location: Type.string({}),
-    start: Type.string({ index: true, default: new Date().toISOString() }),
-    end: Type.string({ required: true }),
+    start: Type.date({ index: true, default: new Date().toISOString() }),
+    end: Type.date({ required: true }),
     description: Type.string({}),
     state: Type.string({ required: true, enum: states, default: states[0] }),
   },

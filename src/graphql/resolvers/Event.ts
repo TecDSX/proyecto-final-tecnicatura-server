@@ -17,7 +17,7 @@ const existsEvent = async (eventId: string, Event: any) => {
 export default {
   Query: {
     getEvents: async (_: any, __: any, { models: { Event } }: Context) =>
-      await Event.find({ active: true }),
+      await Event.find({ state: { $not: { $in: ['finalized'] } } }),
   },
   Mutation: {
     setEventState: async (
@@ -64,7 +64,7 @@ export default {
       await existsEvent(eventId, Event);
       const event = await Event.findByIdAndUpdate(
         { _id: eventId },
-        { $set: { active: false } },
+        { $set: { state: 'cancelled' } },
         (err, doc) => Promise.all([err, doc])
       );
       return !!event || false;
