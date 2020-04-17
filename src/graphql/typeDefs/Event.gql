@@ -6,34 +6,28 @@ enum EventStates {
 }
 input CreateEventInput {
   name: String!
-  location: String!
-  start: String!
+  location: String
+  start: String
   end: String!
-  description: String!
-  guestsNumber: Int!
-  active: Boolean
+  description: String
   state: EventStates
 }
 input UpdateEventInput {
   name: String!
-  location: String!
-  start: String!
+  location: String
+  start: String
   end: String!
-  description: String!
-  guestsNumber: Int!
-  active: Boolean
+  description: String
   state: EventStates
 }
 type Event {
   _id: ID!
   name: String!
-  location: String!
-  start: DateTime!
+  location: String
+  start: DateTime
   end: DateTime!
-  description: String!
-  guestsNumber: Int!
+  description: String
   state: EventStates!
-  active: Boolean!
   updatedAt: DateTime!
   createdAt: DateTime!
 }

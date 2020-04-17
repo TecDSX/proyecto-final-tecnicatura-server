@@ -34,8 +34,6 @@ export type CreateEventInput = {
     start: string;
     end: string;
     description: string;
-    guestsNumber: number;
-    active: Boolean;
     state?: EventStates;
   };
 };
@@ -47,8 +45,6 @@ export type UpdateEventInput = {
     start: string;
     end: string;
     description: string;
-    guestsNumber: number;
-    active: Boolean;
     state?: EventStates;
   };
 };

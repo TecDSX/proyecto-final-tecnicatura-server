@@ -4,6 +4,8 @@ import { typeDefs } from '../graphql/typeDefs';
 import { config } from '../config';
 import { createConnection } from '../database';
 import { context } from '../graphql/context';
+import { EventHandlerFinallizer } from '../utils/utils';
+
 const {
   server: { port },
 } = config;
@@ -14,6 +16,7 @@ const graphqlServer = new GraphQLServer({
 });
 export const main = async (): Promise<void> => {
   await createConnection();
+  await EventHandlerFinallizer();
   await graphqlServer.start({ port });
   console.log(`Server running at port ${port}`);
 };
