@@ -10,14 +10,16 @@ import {
 } from '../../interfaces';
 
 const existsEvent = async (eventId: string, Event: any) => {
-  const event = await Event.findById({ _id: eventId });
+  const event = await Event.findOne({ _id: eventId });
   if (!event) throw new Error('Event not exists');
+  if (event.state === 'finalized' || event.state === 'cancelled')
+    throw new Error('You can not update finished o canceled events');
 };
 
 export default {
   Query: {
     getEvents: async (_: any, __: any, { models: { Event } }: Context) =>
-      await Event.find({ state: { $not: { $in: ['cancelled'] } } }),
+      await Event.find({ state: { $nin: ['cancelled'] } }),
   },
   Mutation: {
     setEventState: async (
@@ -75,7 +77,7 @@ export default {
         throw new Error('Event can not end in this date');
       const eventData = data;
       return await Event.findOneAndUpdate(
-        { _id: eventId, state: { $nin: ['cancelled', 'finalized'] } },
+        { _id: eventId },
         { $set: eventData },
         (err, doc) => Promise.all([err, doc])
       );
@@ -88,7 +90,7 @@ export default {
     ) => {
       await existsEvent(eventId, Event);
       const event = await Event.findOneAndUpdate(
-        { _id: eventId, state: { $nin: ['cancelled', 'finalized'] } },
+        { _id: eventId },
         { $set: { state: 'cancelled' } },
         (err, doc) => Promise.all([err, doc])
       );
