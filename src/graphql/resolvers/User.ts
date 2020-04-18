@@ -8,14 +8,16 @@ import {
   DeleteUserInput,
   SetUserStateInput,
 } from '../../interfaces';
+import { pubsub } from '../pubsub';
+import { withFilter } from 'graphql-yoga';
 const existsUser = async (userId: string, User: any) => {
-  const user = await User.findById({ _id: userId });
+  const user = await User.findOne({ _id: userId, active: true });
   if (!user) throw new Error('User not exists');
 };
 export default {
   Query: {
     getUsers: async (_: any, __: any, { models: { User } }: Context) =>
-      await User.find(),
+      await User.find({ active: true }),
   },
   Mutation: {
     login: async (
@@ -38,11 +40,14 @@ export default {
       { models: { User } }: Context
     ) => {
       await existsUser(userId, User);
-      const user = await User.findByIdAndUpdate(
+      const user = await User.findOneAndUpdate(
         { _id: userId },
         { $set: { state } },
         (err, doc) => Promise.all([err, doc])
       );
+      pubsub.publish('subscribeUser', {
+        subscribeUser: user,
+      });
       return !!user || false;
     },
     createUser: async (
@@ -60,12 +65,16 @@ export default {
     ) => {
       await existsUser(userId, User);
       if (password) password = encrypt(password).toString();
-      const userData = password ? { ...data, password } : data;
-      return await User.findByIdAndUpdate(
+      const Data = password ? { ...data, password } : data;
+      const user = await User.findOneAndUpdate(
         { _id: userId },
-        { $set: userData },
+        { $set: Data },
         (err, doc) => Promise.all([err, doc])
       );
+      pubsub.publish('subscribeUser', {
+        subscribeUser: user,
+      });
+      return user;
     },
     deleteUser: async (
       _: any,
@@ -73,12 +82,26 @@ export default {
       { models: { User } }: Context
     ) => {
       await existsUser(userId, User);
-      const user = await User.findByIdAndUpdate(
+      const user = await User.findOneAndUpdate(
         { _id: userId },
         { $set: { active: false } },
         (err, doc) => Promise.all([err, doc])
       );
+      pubsub.publish('subscribeUser', {
+        subscribeUser: user,
+      });
       return !!user || false;
+    },
+  },
+  Subscription: {
+    subscribeUser: {
+      subscribe: withFilter(
+        () => pubsub.asyncIterator('subscribeUser'),
+        ({ subscribeUser: { _id } }, { userId }) => {
+          console.log(userId, _id);
+          return String(userId) === String(_id);
+        }
+      ),
     },
   },
 };

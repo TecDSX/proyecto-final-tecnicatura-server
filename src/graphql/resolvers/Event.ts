@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { Context } from '../context';
-import { encrypt, createToken } from '../../utils/utils';
+import { dateGreaterOrEqualThanDate } from '../../utils/utils';
 import {
   SetEventStateInput,
   CreateEventInput,
@@ -17,7 +17,7 @@ const existsEvent = async (eventId: string, Event: any) => {
 export default {
   Query: {
     getEvents: async (_: any, __: any, { models: { Event } }: Context) =>
-      await Event.find({ state: { $not: { $in: ['finalized'] } } }),
+      await Event.find({ state: { $not: { $in: ['cancelled'] } } }),
   },
   Mutation: {
     setEventState: async (
@@ -26,7 +26,7 @@ export default {
       { models: { Event } }: Context
     ) => {
       await existsEvent(eventId, Event);
-      const event = await Event.findByIdAndUpdate(
+      const event = await Event.findOneAndUpdate(
         { _id: eventId },
         { $set: { state } },
         (err, doc) => Promise.all([err, doc])
@@ -39,6 +39,18 @@ export default {
       { input: { ...data } }: CreateEventInput,
       { models: { Event } }: Context
     ) => {
+      if (
+        data.start &&
+        !dateGreaterOrEqualThanDate(data.start, new Date().toString())
+      )
+        throw new Error('Event can not start in this date');
+      if (
+        !dateGreaterOrEqualThanDate(
+          data.end,
+          data.start || new Date().toString()
+        )
+      )
+        throw new Error('Event can not end in this date');
       return await Event.create({ ...data });
     },
 
@@ -48,9 +60,22 @@ export default {
       { models: { Event } }: Context
     ) => {
       await existsEvent(eventId, Event);
+      if (
+        data.start &&
+        !dateGreaterOrEqualThanDate(data.start, new Date().toString())
+      )
+        throw new Error('Event can not start in this date');
+      if (
+        data.end &&
+        !dateGreaterOrEqualThanDate(
+          data.end,
+          data.start || new Date().toString()
+        )
+      )
+        throw new Error('Event can not end in this date');
       const eventData = data;
-      return await Event.findByIdAndUpdate(
-        { _id: eventId },
+      return await Event.findOneAndUpdate(
+        { _id: eventId, state: { $nin: ['cancelled', 'finalized'] } },
         { $set: eventData },
         (err, doc) => Promise.all([err, doc])
       );
@@ -62,8 +87,8 @@ export default {
       { models: { Event } }: Context
     ) => {
       await existsEvent(eventId, Event);
-      const event = await Event.findByIdAndUpdate(
-        { _id: eventId },
+      const event = await Event.findOneAndUpdate(
+        { _id: eventId, state: { $nin: ['cancelled', 'finalized'] } },
         { $set: { state: 'cancelled' } },
         (err, doc) => Promise.all([err, doc])
       );
