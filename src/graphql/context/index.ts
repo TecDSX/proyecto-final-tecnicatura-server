@@ -2,10 +2,12 @@
 import { Request, Response } from 'express';
 import { User } from '../../models/User';
 import { Event } from '../../models/Event';
+import { Question } from '../../models/Question';
 const contextReturn = {
   models: {
     User,
     Event,
+    Question,
   },
 };
 type reqRes = {

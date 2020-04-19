@@ -1,11 +1,13 @@
 type UserStates = 'connected' | 'disconnect';
 type EventStates = 'active' | 'finalized' | 'cancelled' | 'hidden';
+type QuestionStates = 'waiting' | 'active' | 'complete' | 'deleted';
 export type LoginInput = {
   input: {
     email: string;
     password: string;
   };
 };
+
 // User inputs
 export type CreateUserInput = {
   input: {
@@ -26,6 +28,7 @@ export type UpdateUserInput = {
     state?: UserStates;
   };
 };
+
 // Event inputs
 export type CreateEventInput = {
   input: {
@@ -45,11 +48,41 @@ export type UpdateEventInput = {
     start: string;
     end: string;
     description: string;
+    questions: string[];
     state?: EventStates;
   };
 };
+
+// Question inputs
+
+// export type Response = {
+//   response: string;
+// };
+export type CreateQuestionInput = {
+  input: {
+    eventId: string;
+    endDate: string;
+    responses: string;
+    state?: QuestionStates;
+  };
+};
+export type UpdateQuestionInput = {
+  questionId: string;
+  input: {
+    endDate: string;
+    responses: string;
+    state?: QuestionStates;
+  };
+};
+
 export type SetUserStateInput = { userId: string; state: UserStates };
 export type DeleteUserInput = { userId: string };
 
 export type SetEventStateInput = { eventId: string; state: EventStates };
 export type DeleteEventInput = { eventId: string };
+
+export type SetQuestionStateInput = {
+  questionId: string;
+  state: QuestionStates;
+};
+export type DeleteQuestionInput = { questionId: string };
