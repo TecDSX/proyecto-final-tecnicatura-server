@@ -1,7 +1,7 @@
-enum EventStates {  
+enum EventStates {
   active
   finalized
-  cancelled 
+  cancelled
   hidden
 }
 input CreateEventInput {
@@ -13,10 +13,10 @@ input CreateEventInput {
   state: EventStates
 }
 input UpdateEventInput {
-  name: String!
+  name: String
   location: String
   start: String
-  end: String!
+  end: String
   description: String
   state: EventStates
 }
