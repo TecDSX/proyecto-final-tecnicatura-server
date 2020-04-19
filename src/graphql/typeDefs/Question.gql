@@ -1,0 +1,31 @@
+enum QuestionStates {
+  waiting
+  active
+  complete
+  deleted
+}
+input CreateQuestionInput {
+  eventId: String!
+  endDate: String!
+  state: QuestionStates!
+}
+input UpdateQuestionInput {
+  endDate: String!
+  state: QuestionStates!
+}
+type Question {
+  _id: ID!
+  endDate: DateTime!
+  state: QuestionStates!
+  updatedAt: DateTime!
+  createdAt: DateTime!
+}
+type Query {
+  getQuestions: [Question]!
+}
+type Mutation {
+  setQuestionState(questionId: ID!, state: QuestionStates!): Boolean!
+  createQuestion(input: CreateQuestionInput!): Question!
+  updateQuestion(questionId: ID!, input: UpdateQuestionInput!): Question!
+  deleteQuestion(questionId: ID!): Boolean!
+}
