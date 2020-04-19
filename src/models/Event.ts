@@ -1,4 +1,5 @@
 import { createSchema, Type, typedModel } from 'ts-mongoose';
+import { QuestionSchema } from './Question';
 const states = ['active', 'finalized', 'cancelled', 'hidden'] as const;
 export const EventSchema = createSchema(
   {
@@ -8,6 +9,9 @@ export const EventSchema = createSchema(
     end: Type.date({ required: true }),
     description: Type.string({}),
     state: Type.string({ required: true, enum: states, default: states[0] }),
+    questions: Type.array({ default: [] }).of(
+      Type.ref(Type.objectId()).to('Question', QuestionSchema)
+    ),
   },
   { timestamps: { createdAt: true, updatedAt: true } }
 );

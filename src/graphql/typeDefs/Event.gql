@@ -27,6 +27,7 @@ type Event {
   start: DateTime
   end: DateTime!
   description: String
+  questions: [Question]!
   state: EventStates!
   updatedAt: DateTime!
   createdAt: DateTime!

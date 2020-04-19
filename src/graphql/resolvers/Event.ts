@@ -1,20 +1,29 @@
 /* eslint-disable no-unused-vars */
 import { Context } from '../context';
-import { encrypt, createToken } from '../../utils/utils';
 import {
   SetEventStateInput,
   CreateEventInput,
   UpdateEventInput,
   DeleteEventInput,
-  // inputs
 } from '../../interfaces';
 
-const existsEvent = async (eventId: string, Event: any) => {
+export const existsEvent = async (eventId: string, Event: any) => {
   const event = await Event.findById({ _id: eventId });
-  if (!event) throw new Error('Event not exists');
+  if (event) {
+    return true;
+  } else {
+    throw new Error('Event not exists');
+  }
 };
 
 export default {
+  Event: {
+    questions: async (
+      { questions }: any,
+      _: any,
+      { models: { Question } }: Context
+    ) => await Question.find({ _id: questions }),
+  },
   Query: {
     getEvents: async (_: any, __: any, { models: { Event } }: Context) =>
       await Event.find({ state: { $not: { $in: ['finalized'] } } }),
