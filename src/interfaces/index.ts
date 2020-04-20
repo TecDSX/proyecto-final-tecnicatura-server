@@ -96,8 +96,8 @@ export type CreateParticipationInput = {
     eventId: string;
     userPrivilege?: UserPrivileges;
     state?: ParticipationStates;
-  }
-}
+  };
+};
 export type UpdateParticipationInput = {
   participationId: string;
   input: {

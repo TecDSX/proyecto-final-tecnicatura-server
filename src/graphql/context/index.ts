@@ -11,7 +11,7 @@ const contextReturn = {
     Event,
     Question,
     Response,
-    Participation
+    Participation,
   },
 };
 type reqRes = {

@@ -2,12 +2,15 @@
 import { Context } from '../context';
 import {
   CreateParticipationInput,
-  UpdateParticipationInput
+  UpdateParticipationInput,
 } from '../../interfaces';
 import { existsUser } from './User';
 import { existsEvent } from './Event';
 
-export const existsParticipation = async (participationId: string, Participation: any) => {
+export const existsParticipation = async (
+  participationId: string,
+  Participation: any
+) => {
   const participation = await Participation.findById({ _id: participationId });
   if (!participation) throw new Error('Participation not exists');
 };
@@ -19,8 +22,11 @@ export default {
       await Event.findById({ _id: event }),
   },
   Query: {
-    getParticipations: async (_: any, __: any, { models: { Participation } }: Context) =>
-      await Participation.find(),
+    getParticipations: async (
+      _: any,
+      __: any,
+      { models: { Participation } }: Context
+    ) => await Participation.find(),
   },
   Mutation: {
     createParticipation: async (
@@ -37,5 +43,5 @@ export default {
       });
       return participation;
     },
-  }
-}
+  },
+};
