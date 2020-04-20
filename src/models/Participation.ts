@@ -24,5 +24,6 @@ export const ParticipationSchema: any = createSchema(
   },
   { timestamps: { createdAt: true, updatedAt: true } }
 );
+ParticipationSchema.index({ user: 1, event: 1 }, { unique: true });
 export const Participation = typedModel('Participate', ParticipationSchema);
 export type Participation = typeof Participation;
