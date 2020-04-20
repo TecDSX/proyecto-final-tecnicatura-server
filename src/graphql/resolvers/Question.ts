@@ -8,8 +8,9 @@ import {
 } from '../../interfaces';
 import { existsEvent } from './Event';
 import { dateGreaterOrEqualThanDate } from '../../utils/utils';
+import { Question } from '../../models/Question';
 
-const existsQuestion = async (questionId: string, Question: any) => {
+export const existsQuestion = async (questionId: string, Question: any) => {
   const question = await Question.findById({ _id: questionId });
   if (!question) throw new Error('Question not exists');
   if (question.state === 'complete')
@@ -24,6 +25,13 @@ const existsQuestionInEvent = async (
   if (!event) throw new Error('Question not exists in Event');
 };
 export default {
+  Question: {
+    responses: async (
+      { responses }: any,
+      _: any,
+      { models: { Response } }: Context
+    ) => await Response.find({ _id: responses }),
+  },
   Query: {
     getQuestions: async (_: any, __: any, { models: { Question } }: Context) =>
       await Question.find(),

@@ -19,7 +19,7 @@ export const EventSchema = createSchema(
       default: EventStates[0],
       index: true,
     }),
-    questions: Type.array({ default: [] }).of(
+    questions: Type.array({ default: [], unique: true }).of(
       Type.ref(Type.objectId()).to('Question', QuestionSchema)
     ),
   },

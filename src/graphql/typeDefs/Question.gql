@@ -9,17 +9,21 @@ input CreateQuestionInput {
   startDate: DateTime
   endDate: DateTime!
   state: QuestionStates
+  question: String!
 }
 input UpdateQuestionInput {
   startDate: DateTime
   endDate: DateTime
   state: QuestionStates
+  question: String
 }
 type Question {
   _id: ID!
   startDate: DateTime!
   endDate: DateTime!
+  responses: [Response]!
   state: QuestionStates!
+  question: String!
   updatedAt: DateTime!
   createdAt: DateTime!
 }

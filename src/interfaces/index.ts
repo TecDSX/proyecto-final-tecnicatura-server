@@ -56,15 +56,10 @@ export type UpdateEventInput = {
 };
 
 // Question inputs
-
-// export type Response = {
-//   response: string;
-// };
 export type CreateQuestionInput = {
   input: {
     eventId: string;
     endDate: string;
-    responses: string;
     state?: QuestionStates;
   };
 };
@@ -72,8 +67,22 @@ export type UpdateQuestionInput = {
   questionId: string;
   input: {
     endDate: string;
-    responses: string;
     state?: QuestionStates;
+  };
+};
+
+// Response inputs
+export type CreateResponseInput = {
+  input: {
+    questionId: string;
+    userId: string;
+    value: string;
+  };
+};
+export type UpdateResponseInput = {
+  responseId: string;
+  input: {
+    value?: string;
   };
 };
 
@@ -88,3 +97,5 @@ export type SetQuestionStateInput = {
   state: QuestionStates;
 };
 export type DeleteQuestionInput = { questionId: string; eventId: string };
+
+export type DeleteResponseInput = { responseId: string };
