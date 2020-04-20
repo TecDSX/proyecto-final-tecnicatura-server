@@ -16,8 +16,11 @@ export default {
   Query: {
     getResponses: async (_: any, __: any, { models: { Response } }: Context) =>
       await Response.find(),
-    getResponsesByUser: async (_: any, user: { user: string }, { models: { Response } }: Context) =>
-      await Response.find({ userId: user.user }),
+    getResponsesByUser: async (
+      _: any,
+      user: { user: string },
+      { models: { Response } }: Context
+    ) => await Response.find({ userId: user.user }),
   },
   Mutation: {
     createResponse: async (
