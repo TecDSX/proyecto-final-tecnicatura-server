@@ -8,14 +8,14 @@ import { Question, Questionstates } from '../models/Question';
 const {
   security: { expiresIn, secretKey },
 } = config;
+
 export const encrypt = (data: any) =>
   crypto.createHash('sha1').update(data).digest();
+
 export const createToken = async (data: any) =>
   jwt.sign({ data: data }, secretKey, { expiresIn });
 
-// Handlers
-
-export const EventHandlerFinallizer = () => {
+export const autoCompleteEvent = () => {
   setInterval(async () => {
     const dateNow = new Date();
     await Event.updateMany(
@@ -39,7 +39,6 @@ export const EventHandlerFinallizer = () => {
       },
       { $set: { state: EventStates[1] } }
     );
-    // desde aqui
     await Question.updateMany(
       { state: { $nin: ['complete', 'waiting'] }, startDate: { $gt: dateNow } },
       { $set: { state: Questionstates[0] } }
@@ -53,4 +52,17 @@ export const EventHandlerFinallizer = () => {
       { $set: { state: Questionstates[2] } }
     );
   }, 1000);
+};
+// Compare that dateNow less or equal than date param
+export const dateGreaterThanDate = (firstDate: string, secondDate: string) => {
+  return new Date(firstDate).getTime() > new Date(secondDate).getTime();
+};
+export const dateEqualThanDate = (firstDate: string, secondDate: string) => {
+  return new Date(firstDate).getTime() === new Date(secondDate).getTime();
+};
+export const dateGreaterOrEqualThanDate = (
+  firstDate: string,
+  secondDate: string
+) => {
+  return new Date(firstDate).getTime() >= new Date(secondDate).getTime();
 };
