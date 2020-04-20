@@ -1,0 +1,23 @@
+input CreateResponseInput {
+  questionId: String!
+  eventId: String!
+  userId: String!
+  value: String!
+}
+input UpdateResponseInput {
+  value: String
+}
+type Response {
+  _id: ID!
+  user: String!
+  value: String!
+}
+type Query {
+  getResponses: [Response]!
+  getResponsesByUser(user: String!): [Response]!
+}
+type Mutation {
+  createResponse(input: CreateResponseInput!): Response!
+  updateResponse(responseId: ID!, input: UpdateResponseInput!): Response!
+  deleteResponse(responseId: ID!): Boolean!
+}
