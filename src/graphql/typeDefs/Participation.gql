@@ -1,0 +1,33 @@
+enum ParticipationStates {
+  waiting
+  cancelled
+  accepted
+}
+enum UserPrivileges {
+  guest
+  admin
+}
+input CreateParticipationInput {
+  userId: String!
+  eventId: String!
+  UserPrivilege: UserPrivileges
+  state: ParticipationStates
+}
+input UpdateParticipationInput {
+  userPrivilege: UserPrivileges
+  state: ParticipationStates
+}
+type Participation {
+  _id: ID!
+  user: User!
+  event: Event!
+  UserPrivilege: UserPrivileges
+  state: ParticipationStates
+}
+type Query {
+  getParticipations: [Participation]!
+}
+type Mutation {
+  createParticipation(input: CreateParticipationInput!): Participation!
+  UpdateParticipationInput(participationId: ID!, input: UpdateParticipationInput!): Participation!
+}
