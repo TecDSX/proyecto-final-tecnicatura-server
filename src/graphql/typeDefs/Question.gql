@@ -6,15 +6,18 @@ enum QuestionStates {
 }
 input CreateQuestionInput {
   eventId: String!
-  endDate: String!
-  state: QuestionStates!
+  startDate: DateTime
+  endDate: DateTime!
+  state: QuestionStates
 }
 input UpdateQuestionInput {
-  endDate: String!
-  state: QuestionStates!
+  startDate: DateTime
+  endDate: DateTime
+  state: QuestionStates
 }
 type Question {
   _id: ID!
+  startDate: DateTime!
   endDate: DateTime!
   state: QuestionStates!
   updatedAt: DateTime!
@@ -27,5 +30,5 @@ type Mutation {
   setQuestionState(questionId: ID!, state: QuestionStates!): Boolean!
   createQuestion(input: CreateQuestionInput!): Question!
   updateQuestion(questionId: ID!, input: UpdateQuestionInput!): Question!
-  deleteQuestion(questionId: ID!): Boolean!
+  deleteQuestion(eventId: ID!, questionId: ID!): Boolean!
 }

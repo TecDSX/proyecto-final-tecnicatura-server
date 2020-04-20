@@ -1,14 +1,24 @@
 import { createSchema, Type, typedModel } from 'ts-mongoose';
 import { QuestionSchema } from './Question';
-const states = ['active', 'finalized', 'cancelled', 'hidden'] as const;
+export const EventStates = [
+  'active',
+  'finalized',
+  'cancelled',
+  'waiting',
+] as const;
 export const EventSchema = createSchema(
   {
     name: Type.string({ required: true, index: true }),
     location: Type.string({}),
     start: Type.date({ index: true, default: new Date().toISOString() }),
-    end: Type.date({ required: true }),
+    end: Type.date({ required: true, index: true }),
     description: Type.string({}),
-    state: Type.string({ required: true, enum: states, default: states[0] }),
+    state: Type.string({
+      required: true,
+      enum: EventStates,
+      default: EventStates[3],
+      index: true,
+    }),
     questions: Type.array({ default: [] }).of(
       Type.ref(Type.objectId()).to('Question', QuestionSchema)
     ),

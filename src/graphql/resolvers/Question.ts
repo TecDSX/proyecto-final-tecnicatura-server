@@ -11,8 +11,17 @@ import { existsEvent } from './Event';
 const existsQuestion = async (questionId: string, Question: any) => {
   const question = await Question.findById({ _id: questionId });
   if (!question) throw new Error('Question not exists');
+  if (question.state === 'complete')
+    throw new Error('You can not update complete Questions');
 };
-
+const existsQuestionInEvent = async (
+  questionId: string,
+  eventId: string,
+  Event: any
+) => {
+  const event = await Event.findOne({ _id: eventId, questions: questionId });
+  if (!event) throw new Error('Question not exists in Event');
+};
 export default {
   Query: {
     getQuestions: async (_: any, __: any, { models: { Question } }: Context) =>
@@ -45,7 +54,14 @@ export default {
         },
         { questions: eventId }
       );
-      return await Question.create({ ...data });
+      const question = await Question.create({ ...data });
+      await Event.updateOne(
+        {
+          _id: eventId,
+        },
+        { $addToSet: { questions: question._id } }
+      );
+      return question;
     },
 
     updateQuestion: async (
@@ -64,16 +80,18 @@ export default {
 
     deleteQuestion: async (
       _: any,
-      { questionId }: DeleteQuestionInput,
-      { models: { Question } }: Context
+      { questionId, eventId }: DeleteQuestionInput,
+      { models: { Question, Event } }: Context
     ) => {
+      await existsEvent(eventId, Event);
       await existsQuestion(questionId, Question);
-      const question = await Question.findByIdAndUpdate(
-        { _id: questionId },
-        { $set: { state: 'deleted' } },
-        (err, doc) => Promise.all([err, doc])
+      await existsQuestionInEvent(questionId, eventId, Event);
+      await Event.updateOne(
+        { _id: eventId },
+        { $pull: { questions: questionId } }
       );
-      return !!question || false;
+      await Question.deleteOne({ _id: questionId });
+      return true;
     },
   },
 };

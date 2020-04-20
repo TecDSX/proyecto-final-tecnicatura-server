@@ -1,14 +1,14 @@
 import { createSchema, Type, typedModel } from 'ts-mongoose';
-import { UserSchema } from './User';
-const states = ['waiting', 'active', 'complete'] as const;
+export const Questionstates = ['waiting', 'active', 'complete'] as const;
 export const QuestionSchema: any = createSchema(
   {
-    startDate: Type.date({ index: true }),
-    endDate: Type.date({}),
-    state: Type.string({ required: true, enum: states, default: states[1] }),
-    responses: Type.array().of({
-      userId: Type.ref(Type.objectId()).to('User', UserSchema),
-      response: Type.string(),
+    startDate: Type.date({ index: true, default: new Date().toISOString() }),
+    endDate: Type.date({ index: true }),
+    state: Type.string({
+      required: true,
+      index: true,
+      enum: Questionstates,
+      default: Questionstates[0],
     }),
   },
   { timestamps: { createdAt: true, updatedAt: true } }

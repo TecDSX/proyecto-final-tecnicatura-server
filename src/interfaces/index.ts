@@ -28,7 +28,9 @@ export type UpdateUserInput = {
     state?: UserStates;
   };
 };
-
+export type GetEventInput = {
+  eventId: string;
+};
 // Event inputs
 export type CreateEventInput = {
   input: {
@@ -85,4 +87,4 @@ export type SetQuestionStateInput = {
   questionId: string;
   state: QuestionStates;
 };
-export type DeleteQuestionInput = { questionId: string };
+export type DeleteQuestionInput = { questionId: string; eventId: string };

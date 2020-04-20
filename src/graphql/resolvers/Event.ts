@@ -5,15 +5,14 @@ import {
   CreateEventInput,
   UpdateEventInput,
   DeleteEventInput,
+  GetEventInput,
 } from '../../interfaces';
 
 export const existsEvent = async (eventId: string, Event: any) => {
-  const event = await Event.findById({ _id: eventId });
-  if (event) {
-    return true;
-  } else {
-    throw new Error('Event not exists');
-  }
+  const event = await Event.findOne({ _id: eventId });
+  if (!event) throw new Error('Event not exists');
+  if (event.state === 'cancelled' || event.state === 'finalized')
+    throw new Error('You can not update Events finalized or cancelled');
 };
 
 export default {
@@ -26,7 +25,12 @@ export default {
   },
   Query: {
     getEvents: async (_: any, __: any, { models: { Event } }: Context) =>
-      await Event.find({ state: { $not: { $in: ['finalized'] } } }),
+      await Event.find({ state: { $nin: ['cancelled'] } }),
+    getEvent: async (
+      _: any,
+      { eventId }: GetEventInput,
+      { models: { Event } }: Context
+    ) => await Event.findOne({ _id: eventId }),
   },
   Mutation: {
     setEventState: async (
