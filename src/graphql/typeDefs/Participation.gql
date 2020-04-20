@@ -21,7 +21,7 @@ type Participation {
   _id: ID!
   user: User!
   event: Event!
-  UserPrivilege: UserPrivileges
+  userPrivilege: UserPrivileges
   state: ParticipationStates
 }
 type Query {
@@ -29,5 +29,8 @@ type Query {
 }
 type Mutation {
   createParticipation(input: CreateParticipationInput!): Participation!
-  UpdateParticipationInput(participationId: ID!, input: UpdateParticipationInput!): Participation!
+  updateParticipation(
+    participationId: ID!
+    input: UpdateParticipationInput!
+  ): Participation!
 }
