@@ -4,7 +4,7 @@ import { typeDefs } from '../graphql/typeDefs';
 import { config } from '../config';
 import { createConnection } from '../database';
 import { context } from '../graphql/context';
-import { autoCompleteEvent } from '../utils/utils';
+import { autoComplete } from '../utils/utils';
 
 const {
   server: { port },
@@ -16,7 +16,7 @@ const graphqlServer = new GraphQLServer({
 });
 export const main = async (): Promise<void> => {
   await createConnection();
-  autoCompleteEvent();
+  autoComplete();
   await graphqlServer.start({ port });
   console.log(`Server running at port ${port}`);
 };

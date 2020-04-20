@@ -7,6 +7,7 @@ import {
   DeleteQuestionInput,
 } from '../../interfaces';
 import { existsEvent } from './Event';
+import { dateGreaterOrEqualThanDate } from '../../utils/utils';
 
 const existsQuestion = async (questionId: string, Question: any) => {
   const question = await Question.findById({ _id: questionId });
@@ -48,6 +49,9 @@ export default {
       { models: { Question, Event } }: Context
     ) => {
       await existsEvent(eventId, Event);
+      if (data.endDate.length <= 0) throw new Error('EndDate can not be null');
+      if (!dateGreaterOrEqualThanDate(data.endDate, new Date().toString()))
+        throw new Error('Event can not end in this date');
       await Event.updateOne(
         {
           _id: eventId,
@@ -70,6 +74,12 @@ export default {
       { models: { Question } }: Context
     ) => {
       await existsQuestion(questionId, Question);
+      if (data.endDate.length <= 0) throw new Error('EndDate can not be null');
+      if (
+        data.endDate &&
+        !dateGreaterOrEqualThanDate(data.endDate, new Date().toString())
+      )
+        throw new Error('Event can not end in this date');
       const questionData = data;
       return await Question.findByIdAndUpdate(
         { _id: questionId },

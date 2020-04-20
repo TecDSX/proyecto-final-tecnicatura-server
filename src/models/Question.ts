@@ -1,5 +1,5 @@
 import { createSchema, Type, typedModel } from 'ts-mongoose';
-export const Questionstates = ['waiting', 'active', 'complete'] as const;
+export const QuestionStates = ['waiting', 'active', 'complete'] as const;
 export const QuestionSchema: any = createSchema(
   {
     startDate: Type.date({ index: true, default: new Date().toISOString() }),
@@ -7,8 +7,8 @@ export const QuestionSchema: any = createSchema(
     state: Type.string({
       required: true,
       index: true,
-      enum: Questionstates,
-      default: Questionstates[0],
+      enum: QuestionStates,
+      default: QuestionStates[0],
     }),
   },
   { timestamps: { createdAt: true, updatedAt: true } }

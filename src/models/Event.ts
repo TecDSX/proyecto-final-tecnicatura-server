@@ -1,10 +1,10 @@
 import { createSchema, Type, typedModel } from 'ts-mongoose';
 import { QuestionSchema } from './Question';
 export const EventStates = [
+  'waiting',
   'active',
   'finalized',
   'cancelled',
-  'waiting',
 ] as const;
 export const EventSchema = createSchema(
   {
@@ -16,7 +16,7 @@ export const EventSchema = createSchema(
     state: Type.string({
       required: true,
       enum: EventStates,
-      default: EventStates[3],
+      default: EventStates[0],
       index: true,
     }),
     questions: Type.array({ default: [] }).of(

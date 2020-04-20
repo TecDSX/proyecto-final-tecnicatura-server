@@ -9,7 +9,7 @@ import {
   GetEventInput,
 } from '../../interfaces';
 
-const existsEvent = async (eventId: string, Event: any) => {
+export const existsEvent = async (eventId: string, Event: any) => {
   const event = await Event.findOne({ _id: eventId });
   if (!event) throw new Error('Event not exists');
   if (event.state === 'finalized' || event.state === 'cancelled')
@@ -53,6 +53,8 @@ export default {
       { input: { ...data } }: CreateEventInput,
       { models: { Event } }: Context
     ) => {
+      if (data.start.length <= 0) throw new Error('StartDate can not be null');
+      if (data.end.length <= 0) throw new Error('EndDate can not be null');
       if (
         data.start &&
         !dateGreaterOrEqualThanDate(data.start, new Date().toString())
@@ -74,6 +76,8 @@ export default {
       { models: { Event } }: Context
     ) => {
       await existsEvent(eventId, Event);
+      if (data.start.length <= 0) throw new Error('StartDate can not be null');
+      if (data.end.length <= 0) throw new Error('EndDate can not be null');
       if (
         data.start &&
         !dateGreaterOrEqualThanDate(data.start, new Date().toString())
