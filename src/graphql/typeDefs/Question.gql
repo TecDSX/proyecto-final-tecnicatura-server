@@ -19,6 +19,7 @@ type Question {
   _id: ID!
   startDate: DateTime!
   endDate: DateTime!
+  responses: [Response]!
   state: QuestionStates!
   updatedAt: DateTime!
   createdAt: DateTime!

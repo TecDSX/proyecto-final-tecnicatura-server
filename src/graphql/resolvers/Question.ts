@@ -8,7 +8,7 @@ import {
 } from '../../interfaces';
 import { existsEvent } from './Event';
 
-const existsQuestion = async (questionId: string, Question: any) => {
+export const existsQuestion = async (questionId: string, Question: any) => {
   const question = await Question.findById({ _id: questionId });
   if (!question) throw new Error('Question not exists');
   if (question.state === 'complete')

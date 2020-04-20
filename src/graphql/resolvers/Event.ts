@@ -9,7 +9,7 @@ import {
   GetEventInput,
 } from '../../interfaces';
 
-const existsEvent = async (eventId: string, Event: any) => {
+export const existsEvent = async (eventId: string, Event: any) => {
   const event = await Event.findOne({ _id: eventId });
   if (!event) throw new Error('Event not exists');
   if (event.state === 'finalized' || event.state === 'cancelled')

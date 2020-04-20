@@ -1,20 +1,22 @@
 // eslint-disable-next-line no-unused-vars
-import { Request, Response } from 'express';
+import { Request, Response as rs } from 'express';
 import { User } from '../../models/User';
 import { Event } from '../../models/Event';
 import { Question } from '../../models/Question';
+import { Response } from '../../models/Response';
 const contextReturn = {
   models: {
     User,
     Event,
     Question,
+    Response,
   },
 };
 type reqRes = {
   req: Request;
-  res: Response;
+  res: rs;
 };
 type contextBody = typeof contextReturn & reqRes;
 export type Context = contextBody;
-export const context = ({ req, res }: { req: Request; res: Response }) =>
+export const context = ({ req, res }: { req: Request; res: rs }) =>
   contextReturn;

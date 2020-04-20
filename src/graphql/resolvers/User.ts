@@ -10,7 +10,8 @@ import {
 } from '../../interfaces';
 import { pubsub } from '../pubsub';
 import { withFilter } from 'graphql-yoga';
-const existsUser = async (userId: string, User: any) => {
+
+export const existsUser = async (userId: string, User: any) => {
   const user = await User.findOne({ _id: userId, active: true });
   if (!user) throw new Error('User not exists');
 };
