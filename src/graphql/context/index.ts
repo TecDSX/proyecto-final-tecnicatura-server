@@ -4,12 +4,14 @@ import { User } from '../../models/User';
 import { Event } from '../../models/Event';
 import { Question } from '../../models/Question';
 import { Response } from '../../models/Response';
+import { Participation } from '../../models/Participation';
 const contextReturn = {
   models: {
     User,
     Event,
     Question,
     Response,
+    Participation
   },
 };
 type reqRes = {

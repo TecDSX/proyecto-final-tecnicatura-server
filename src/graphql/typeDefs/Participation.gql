@@ -10,7 +10,7 @@ enum UserPrivileges {
 input CreateParticipationInput {
   userId: String!
   eventId: String!
-  UserPrivilege: UserPrivileges
+  userPrivilege: UserPrivileges
   state: ParticipationStates
 }
 input UpdateParticipationInput {

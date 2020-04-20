@@ -1,6 +1,9 @@
 type UserStates = 'connected' | 'disconnect';
 type EventStates = 'active' | 'finalized' | 'cancelled' | 'hidden';
 type QuestionStates = 'waiting' | 'active' | 'complete' | 'deleted';
+type ParticipationStates = 'waiting' | 'cancelled' | 'accepted';
+type UserPrivileges = 'guest' | 'admin';
+
 export type LoginInput = {
   input: {
     email: string;
@@ -83,6 +86,23 @@ export type UpdateResponseInput = {
   responseId: string;
   input: {
     value?: string;
+  };
+};
+
+// Participate inputs
+export type CreateParticipationInput = {
+  input: {
+    userId: string;
+    eventId: string;
+    userPrivilege?: UserPrivileges;
+    state?: ParticipationStates;
+  }
+}
+export type UpdateParticipationInput = {
+  participationId: string;
+  input: {
+    userPrivilege?: UserPrivileges;
+    state?: ParticipationStates;
   };
 };
 
