@@ -53,8 +53,10 @@ export default {
       { input: { ...data } }: CreateEventInput,
       { models: { Event } }: Context
     ) => {
-      if (data.start.length <= 0) throw new Error('StartDate can not be null');
-      if (data.end.length <= 0) throw new Error('EndDate can not be null');
+      if (data.start && data.start.length <= 0)
+        throw new Error('StartDate can not be null');
+      if (data.end && data.end.length <= 0)
+        throw new Error('EndDate can not be null');
       if (
         data.start &&
         !dateGreaterOrEqualThanDate(data.start, new Date().toString())

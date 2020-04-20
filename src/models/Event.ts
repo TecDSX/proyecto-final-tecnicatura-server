@@ -19,8 +19,8 @@ export const EventSchema = createSchema(
       default: EventStates[0],
       index: true,
     }),
-    questions: Type.array({ default: [], unique: true }).of(
-      Type.ref(Type.objectId()).to('Question', QuestionSchema)
+    questions: Type.array({ default: [] }).of(
+      Type.ref(Type.objectId({ unique: true })).to('Question', QuestionSchema)
     ),
   },
   { timestamps: { createdAt: true, updatedAt: true } }
