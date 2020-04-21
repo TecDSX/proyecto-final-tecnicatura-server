@@ -25,6 +25,7 @@ const changeEventState = async (
   if (eventsWillUpdate.length > 0)
     eventsWillUpdate.map((event) => {
       pubsub.publish('subscribeEvent', {
+        // @ts-ignore
         subscribeEvent: { ...event._doc, state: value },
       });
     });

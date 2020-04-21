@@ -50,7 +50,7 @@ export default {
       const event = await Event.findOneAndUpdate(
         { _id: eventId },
         { $set: { state } },
-        (err, doc) => Promise.all([err, doc])
+        (err: any, doc: any) => Promise.all([err, doc])
       );
       pubsub.publish('subscribeEvent', { subscribeEvent: event });
       return !!event || false;
@@ -106,8 +106,9 @@ export default {
       const eventData = data;
       const event = await Event.findOneAndUpdate(
         { _id: eventId },
+        // @ts-ignore
         { $set: eventData },
-        (err, doc) => Promise.all([err, doc])
+        (err: any, doc: any) => Promise.all([err, doc])
       );
       pubsub.publish('subscribeEvent', { subscribeEvent: event });
       return event;
