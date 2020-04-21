@@ -31,6 +31,7 @@ type Event {
   state: EventStates!
   updatedAt: DateTime!
   createdAt: DateTime!
+  participations: [Participation]!
 }
 type Query {
   getEvents: [Event]!
