@@ -8,7 +8,6 @@ import {
 } from '../../interfaces';
 import { existsEvent } from './Event';
 import { dateGreaterOrEqualThanDate } from '../../utils/utils';
-import { Question } from '../../models/Question';
 import { withFilter } from 'graphql-yoga';
 import { pubsub } from '../pubsub';
 
@@ -42,7 +41,7 @@ export default {
     setQuestionState: async (
       _: any,
       { state, questionId }: SetQuestionStateInput,
-      { models: { Question } }: Context
+      { models: { Question, Event } }: Context
     ) => {
       await existsQuestion(questionId, Question);
       const question = await Question.findOneAndUpdate(
@@ -50,7 +49,11 @@ export default {
         { $set: { state } },
         (err, doc) => Promise.all([err, doc])
       );
+      const event = await Event.findOne({ questions: questionId });
       pubsub.publish('subscribeQuestion', { subscribeQuestion: question });
+      pubsub.publish('subscribeEvent', {
+        subscribeEvent: event,
+      });
       return !!question || false;
     },
 
@@ -64,22 +67,28 @@ export default {
       if (!dateGreaterOrEqualThanDate(data.endDate, new Date().toString()))
         throw new Error('Event can not end in this date');
       const question = await Question.create({ ...data });
-      await Event.updateOne(
+      const event = await Event.findOneAndUpdate(
         {
           _id: eventId,
         },
-        { $addToSet: { questions: question._id } }
+        { $addToSet: { questions: question._id } },
+        (err, doc) => Promise.all([err, doc])
       );
+      pubsub.publish('subscribeEvent', {
+        subscribeEvent: event,
+      });
+
       return question;
     },
 
     updateQuestion: async (
       _: any,
       { input: { ...data }, questionId }: UpdateQuestionInput,
-      { models: { Question } }: Context
+      { models: { Question, Event } }: Context
     ) => {
       await existsQuestion(questionId, Question);
-      if (data.endDate.length <= 0) throw new Error('EndDate can not be null');
+      if (data.endDate && data.endDate.length <= 0)
+        throw new Error('EndDate can not be null');
       if (
         data.endDate &&
         !dateGreaterOrEqualThanDate(data.endDate, new Date().toString())
@@ -91,7 +100,11 @@ export default {
         { $set: questionData },
         (err, doc) => Promise.all([err, doc])
       );
+      const event = await Event.findOne({ questions: questionId });
       pubsub.publish('subscribeQuestion', { subscribeQuestion: question });
+      pubsub.publish('subscribeEvent', {
+        subscribeEvent: event,
+      });
       return question;
     },
 
@@ -103,14 +116,18 @@ export default {
       await existsEvent(eventId, Event);
       await existsQuestion(questionId, Question);
       await existsQuestionInEvent(questionId, eventId, Event);
-      await Event.updateOne(
+      const event = await Event.findOneAndUpdate(
         { _id: eventId },
-        { $pull: { questions: questionId } }
+        { $pull: { questions: questionId } },
+        (err, doc) => Promise.all([err, doc])
       );
+      await Question.deleteOne({ _id: questionId });
       pubsub.publish('subscribeDeleteQuestion', {
         subscribeDeleteQuestion: { _id: questionId, deleted: true },
       });
-      await Question.deleteOne({ _id: questionId });
+      pubsub.publish('subscribeEvent', {
+        subscribeEvent: event,
+      });
       return true;
     },
   },
