@@ -95,6 +95,7 @@ export default {
         )
       )
         throw new Error('Event can not end in this date');
+      return await Event.create({ ...data });
     },
 
     updateEvent: async (
