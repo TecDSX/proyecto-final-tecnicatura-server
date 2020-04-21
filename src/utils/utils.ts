@@ -15,85 +15,73 @@ export const encrypt = (data: any) =>
 
 export const createToken = async (data: any) =>
   jwt.sign({ data: data }, secretKey, { expiresIn });
-const changeEventState = async (
-  { state, date }: { state: any; date: object },
-  value: any
+const changeState = async (
+  model: any,
+  subscriptionEvent: string,
+  conditional: object,
+  value: object
 ) => {
-  const eventsWillUpdate = await Event.find({
-    $and: [{ state: { $nin: ['cancelled', 'finalized'] } }, { state, ...date }],
-  });
+  const eventsWillUpdate = await model.find(conditional);
   if (eventsWillUpdate.length > 0)
-    eventsWillUpdate.map((event) => {
-      pubsub.publish('subscribeEvent', {
+    eventsWillUpdate.map((element: any) => {
+      pubsub.publish(`${subscriptionEvent}`, {
         // @ts-ignore
-        subscribeEvent: { ...event._doc, state: value },
+        [subscriptionEvent]: { ...element._doc, ...value },
       });
     });
-  await Event.updateMany(
-    {
-      $and: [
-        { state: { $nin: ['cancelled', 'finalized'] } },
-        { state, ...date },
-      ],
-    },
-    { $set: { state: value } }
-  );
+  await model.updateMany(conditional, { $set: value });
 };
 export const autoComplete = () => {
   setInterval(async () => {
     const dateNow = new Date();
-    await changeEventState(
+    await changeState(
+      Event,
+      'subscribeEvent',
       {
-        state: 'active',
-        date: { start: { $gt: dateNow } },
+        $and: [
+          { state: { $nin: ['cancelled', 'finalized'] } },
+          { state: 'active', start: { $gt: dateNow } },
+        ],
       },
-      EventStates[0]
+      { state: EventStates[0] }
     );
-    // await Event.updateMany(
-    //   {
-    //     state: 'active',
-    //     start: { $gt: dateNow },
-    //   },
-    //   { $set: { state: EventStates[0] } }
-    // );
-    await changeEventState(
+    await changeState(
+      Event,
+      'subscribeEvent',
       {
-        state: 'waiting',
-        date: { start: { $lte: dateNow } },
+        $and: [
+          { state: { $nin: ['cancelled', 'finalized'] } },
+          { state: 'waiting', start: { $lte: dateNow } },
+        ],
       },
-      EventStates[1]
+      { state: EventStates[1] }
     );
-    // await Event.updateMany(
-    //   {
-    //     state: 'waiting',
-    //     start: { $lte: dateNow },
-    //   },
-    //   { $set: { state: EventStates[1] } }
-    // );
-    await changeEventState(
+    await changeState(
+      Event,
+      'subscribeEvent',
       {
-        state: 'active',
-        date: { end: { $lt: dateNow } },
+        $and: [
+          { state: { $nin: ['cancelled', 'finalized'] } },
+          { state: 'active', end: { $lt: dateNow } },
+        ],
       },
-      EventStates[2]
+      { state: EventStates[2] }
     );
-    // await Event.updateMany(
-    //   {
-    //     state: 'active',
-    //     end: { $lt: dateNow },
-    //   },
-    //   { $set: { state: EventStates[2] } }
-    // );
-
-    await Question.updateMany(
+    await changeState(
+      Question,
+      'subscribeQuestion',
       { state: 'active', startDate: { $gt: dateNow } },
-      { $set: { state: QuestionStates[0] } }
+      { state: QuestionStates[0] }
     );
-    await Question.updateMany(
+    await changeState(
+      Question,
+      'subscribeQuestion',
       { state: 'waiting', startDate: { $lte: dateNow } },
       { $set: { state: QuestionStates[1] } }
     );
-    await Question.updateMany(
+    await changeState(
+      Question,
+      'subscribeQuestion',
       { state: 'active', endDate: { $lt: dateNow } },
       { $set: { state: QuestionStates[2] } }
     );
