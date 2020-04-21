@@ -6,6 +6,7 @@ import {
 } from '../../interfaces';
 import { existsUser } from './User';
 import { existsEvent } from './Event';
+import { EventStates } from '../../models/Event';
 
 export const existsParticipation = async (
   participationId: string,
@@ -42,6 +43,26 @@ export default {
         ...data,
       });
       return participation;
+    },
+
+    updateParticipation: async (
+      _: any,
+      { input: { ...data }, participationId }: UpdateParticipationInput,
+      { models: { Participation } }: Context
+    ) => {
+      await existsParticipation(participationId, Participation);
+      const participation: any = await Participation.findOne({
+        _id: participationId,
+      });
+      if (participation.event.state === EventStates[2])
+        throw new Error('You cannot update participation of a finalized event');
+      if (participation.event.state === EventStates[3])
+        throw new Error('You cannot update participation of a cancelled event');
+      return await Participation.findByIdAndUpdate(
+        { _id: participationId },
+        { $set: data },
+        (err, doc) => Promise.all([err, doc])
+      );
     },
   },
 };
