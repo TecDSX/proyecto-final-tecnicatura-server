@@ -11,6 +11,10 @@ type Response {
   user: User!
   value: String!
 }
+type SubscribeDeleteResponse {
+  _id: ID!
+  deleted: Boolean
+}
 type Query {
   getResponses: [Response]!
 }
@@ -18,4 +22,8 @@ type Mutation {
   createResponse(input: CreateResponseInput!): Response!
   updateResponse(responseId: ID!, input: UpdateResponseInput!): Response!
   deleteResponse(responseId: ID!): Boolean!
+}
+type Subscription {
+  subscribeResponse(responseId: ID!): Response!
+  subscribeDeletedResponse(responseId: ID!): SubscribeDeleteResponse!
 }
