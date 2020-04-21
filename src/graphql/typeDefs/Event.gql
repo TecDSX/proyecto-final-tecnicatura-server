@@ -43,3 +43,6 @@ type Mutation {
   updateEvent(eventId: ID!, input: UpdateEventInput!): Event!
   deleteEvent(eventId: ID!): Boolean!
 }
+type Subscription {
+  subscribeEvent(eventId: ID!): Event!
+}
