@@ -1,5 +1,5 @@
 type UserStates = 'connected' | 'disconnect';
-type EventStates = 'active' | 'finalized' | 'cancelled' | 'hidden';
+export type EventStates = 'active' | 'finalized' | 'cancelled' | 'hidden';
 type QuestionStates = 'waiting' | 'active' | 'complete' | 'deleted';
 type ParticipationStates = 'waiting' | 'cancelled' | 'accepted';
 type UserPrivileges = 'guest' | 'admin';
