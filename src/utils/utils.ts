@@ -34,7 +34,7 @@ const changeState = async (
 export const autoComplete = () => {
   setInterval(async () => {
     const dateNow = new Date();
-    await changeState(
+    changeState(
       Event,
       'subscribeEvent',
       {
@@ -45,7 +45,7 @@ export const autoComplete = () => {
       },
       { state: EventStates[0] }
     );
-    await changeState(
+    changeState(
       Event,
       'subscribeEvent',
       {
@@ -56,7 +56,7 @@ export const autoComplete = () => {
       },
       { state: EventStates[1] }
     );
-    await changeState(
+    changeState(
       Event,
       'subscribeEvent',
       {
@@ -67,19 +67,19 @@ export const autoComplete = () => {
       },
       { state: EventStates[2] }
     );
-    await changeState(
+    changeState(
       Question,
       'subscribeQuestion',
       { state: 'active', startDate: { $gt: dateNow } },
       { state: QuestionStates[0] }
     );
-    await changeState(
+    changeState(
       Question,
       'subscribeQuestion',
       { state: 'waiting', startDate: { $lte: dateNow } },
       { $set: { state: QuestionStates[1] } }
     );
-    await changeState(
+    changeState(
       Question,
       'subscribeQuestion',
       { state: 'active', endDate: { $lt: dateNow } },
