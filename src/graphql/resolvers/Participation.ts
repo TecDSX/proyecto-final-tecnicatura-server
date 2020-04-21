@@ -44,13 +44,21 @@ export default {
         event: eventId,
         ...data,
       });
+      const user = await User.findOne({ _id: userId });
+      const event = await Event.findOne({ _id: eventId });
+      pubsub.publish('subscribeUser', {
+        subscribeUser: user,
+      });
+      pubsub.publish('subscribeEvent', {
+        subscribeUser: event,
+      });
       return participation;
     },
 
     updateParticipation: async (
       _: any,
       { input: { ...data }, participationId }: UpdateParticipationInput,
-      { models: { Participation } }: Context
+      { models: { Participation, User, Event } }: Context
     ) => {
       await existsParticipation(participationId, Participation);
       const participation: any = await Participation.findOne({
@@ -60,13 +68,21 @@ export default {
         throw new Error('You cannot update participation of a finalized event');
       if (participation.event.state === EventStates[3])
         throw new Error('You cannot update participation of a cancelled event');
-      const participationUpdated = await Participation.findByIdAndUpdate(
+      const participationUpdated: any = await Participation.findByIdAndUpdate(
         { _id: participationId },
         { $set: data },
         (err, doc) => Promise.all([err, doc])
       );
+      const user = await User.findOne({ _id: participationUpdated.user });
+      const event = await Event.findOne({ _id: participationUpdated.event });
       pubsub.publish('subscribeParticipation', {
         subscribeParticipation: participationUpdated,
+      });
+      pubsub.publish('subscribeUser', {
+        subscribeUser: user,
+      });
+      pubsub.publish('subscribeEvent', {
+        subscribeUser: event,
       });
       return participationUpdated;
     },
