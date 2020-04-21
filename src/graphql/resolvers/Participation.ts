@@ -1,5 +1,7 @@
 /* eslint-disable no-unused-vars */
 import { Context } from '../context';
+import { pubsub } from '../pubsub';
+import { withFilter } from 'graphql-yoga';
 import {
   CreateParticipationInput,
   UpdateParticipationInput,
@@ -58,11 +60,26 @@ export default {
         throw new Error('You cannot update participation of a finalized event');
       if (participation.event.state === EventStates[3])
         throw new Error('You cannot update participation of a cancelled event');
-      return await Participation.findByIdAndUpdate(
+      const participationUpdated = await Participation.findByIdAndUpdate(
         { _id: participationId },
         { $set: data },
         (err, doc) => Promise.all([err, doc])
       );
+      pubsub.publish('subscribeParticipation', {
+        subscribeParticipation: participationUpdated,
+      });
+      return participationUpdated;
+    },
+  },
+  Subscription: {
+    subscribeParticipation: {
+      subscribe: withFilter(
+        () => pubsub.asyncIterator('subscribeParticipation'),
+        ({ subscribeParticipation: { _id } }, { participationId }) => {
+          console.log(participationId, _id);
+          return String(participationId) === String(_id);
+        }
+      ),
     },
   },
 };

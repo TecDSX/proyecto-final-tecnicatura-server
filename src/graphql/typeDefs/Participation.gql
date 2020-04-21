@@ -34,3 +34,6 @@ type Mutation {
     input: UpdateParticipationInput!
   ): Participation!
 }
+type Subscription {
+  subscribeParticipation(participationId: ID!): Participation!
+}
