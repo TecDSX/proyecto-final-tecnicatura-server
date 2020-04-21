@@ -4,6 +4,7 @@ import { config } from '../config';
 
 import { Event, EventStates } from '../models/Event';
 import { Question, QuestionStates } from '../models/Question';
+import { pubsub } from '../graphql/pubsub';
 
 const {
   security: { expiresIn, secretKey },
@@ -14,31 +15,76 @@ export const encrypt = (data: any) =>
 
 export const createToken = async (data: any) =>
   jwt.sign({ data: data }, secretKey, { expiresIn });
-
+const changeEventState = async (
+  { state, date }: { state: any; date: object },
+  value: any
+) => {
+  const eventsWillUpdate = await Event.find({
+    $and: [{ state: { $nin: ['cancelled', 'finalized'] } }, { state, ...date }],
+  });
+  if (eventsWillUpdate.length > 0)
+    eventsWillUpdate.map((event) => {
+      pubsub.publish('subscribeEvent', {
+        // @ts-ignore
+        subscribeEvent: { ...event._doc, state: value },
+      });
+    });
+  await Event.updateMany(
+    {
+      $and: [
+        { state: { $nin: ['cancelled', 'finalized'] } },
+        { state, ...date },
+      ],
+    },
+    { $set: { state: value } }
+  );
+};
 export const autoComplete = () => {
   setInterval(async () => {
     const dateNow = new Date();
-    await Event.updateMany(
+    await changeEventState(
       {
         state: 'active',
-        start: { $gt: dateNow },
+        date: { start: { $gt: dateNow } },
       },
-      { $set: { state: EventStates[0] } }
+      EventStates[0]
     );
-    await Event.updateMany(
+    // await Event.updateMany(
+    //   {
+    //     state: 'active',
+    //     start: { $gt: dateNow },
+    //   },
+    //   { $set: { state: EventStates[0] } }
+    // );
+    await changeEventState(
       {
         state: 'waiting',
-        start: { $lte: dateNow },
+        date: { start: { $lte: dateNow } },
       },
-      { $set: { state: EventStates[1] } }
+      EventStates[1]
     );
-    await Event.updateMany(
+    // await Event.updateMany(
+    //   {
+    //     state: 'waiting',
+    //     start: { $lte: dateNow },
+    //   },
+    //   { $set: { state: EventStates[1] } }
+    // );
+    await changeEventState(
       {
         state: 'active',
-        end: { $lt: dateNow },
+        date: { end: { $lt: dateNow } },
       },
-      { $set: { state: EventStates[2] } }
+      EventStates[2]
     );
+    // await Event.updateMany(
+    //   {
+    //     state: 'active',
+    //     end: { $lt: dateNow },
+    //   },
+    //   { $set: { state: EventStates[2] } }
+    // );
+
     await Question.updateMany(
       { state: 'active', startDate: { $gt: dateNow } },
       { $set: { state: QuestionStates[0] } }

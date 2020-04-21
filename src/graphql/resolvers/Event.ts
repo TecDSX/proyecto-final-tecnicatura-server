@@ -8,6 +8,8 @@ import {
   DeleteEventInput,
   GetEventInput,
 } from '../../interfaces';
+import { withFilter } from 'graphql-yoga';
+import { pubsub } from '../pubsub';
 
 export const existsEvent = async (eventId: string, Event: any) => {
   const event = await Event.findOne({ _id: eventId });
@@ -48,8 +50,9 @@ export default {
       const event = await Event.findOneAndUpdate(
         { _id: eventId },
         { $set: { state } },
-        (err, doc) => Promise.all([err, doc])
+        (err: any, doc: any) => Promise.all([err, doc])
       );
+      pubsub.publish('subscribeEvent', { subscribeEvent: event });
       return !!event || false;
     },
 
@@ -83,8 +86,10 @@ export default {
       { models: { Event } }: Context
     ) => {
       await existsEvent(eventId, Event);
-      if (data.start.length <= 0) throw new Error('StartDate can not be null');
-      if (data.end.length <= 0) throw new Error('EndDate can not be null');
+      if (data.start && data.start.length <= 0)
+        throw new Error('StartDate can not be null');
+      if (data.end && data.end.length <= 0)
+        throw new Error('EndDate can not be null');
       if (
         data.start &&
         !dateGreaterOrEqualThanDate(data.start, new Date().toString())
@@ -99,11 +104,14 @@ export default {
       )
         throw new Error('Event can not end in this date');
       const eventData = data;
-      return await Event.findOneAndUpdate(
+      const event = await Event.findOneAndUpdate(
         { _id: eventId },
+        // @ts-ignore
         { $set: eventData },
-        (err, doc) => Promise.all([err, doc])
+        (err: any, doc: any) => Promise.all([err, doc])
       );
+      pubsub.publish('subscribeEvent', { subscribeEvent: event });
+      return event;
     },
 
     deleteEvent: async (
@@ -117,7 +125,18 @@ export default {
         { $set: { state: 'cancelled' } },
         (err, doc) => Promise.all([err, doc])
       );
+      pubsub.publish('subscribeEvent', { subscribeEvent: event });
       return !!event || false;
+    },
+  },
+  Subscription: {
+    subscribeEvent: {
+      subscribe: withFilter(
+        () => pubsub.asyncIterator('subscribeEvent'),
+        ({ subscribeEvent: { _id } }, { eventId }) => {
+          return String(_id) === String(eventId);
+        }
+      ),
     },
   },
 };
