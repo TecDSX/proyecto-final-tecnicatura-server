@@ -70,20 +70,35 @@ export const autoComplete = () => {
     changeState(
       Question,
       'subscribeQuestion',
-      { state: 'active', startDate: { $gt: dateNow } },
+      {
+        $and: [
+          { state: { $nin: ['complete'] } },
+          { state: 'active', startDate: { $gt: dateNow } },
+        ],
+      },
       { state: QuestionStates[0] }
     );
     changeState(
       Question,
       'subscribeQuestion',
-      { state: 'waiting', startDate: { $lte: dateNow } },
-      { $set: { state: QuestionStates[1] } }
+      {
+        $and: [
+          { state: { $nin: ['complete'] } },
+          { state: 'waiting', startDate: { $lte: dateNow } },
+        ],
+      },
+      { state: QuestionStates[1] }
     );
     changeState(
       Question,
       'subscribeQuestion',
-      { state: 'active', endDate: { $lt: dateNow } },
-      { $set: { state: QuestionStates[2] } }
+      {
+        $and: [
+          { state: { $nin: ['complete'] } },
+          { state: 'active', endDate: { $lt: dateNow } },
+        ],
+      },
+      { state: QuestionStates[2] }
     );
   }, 1000);
 };

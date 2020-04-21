@@ -5,7 +5,7 @@ export const QuestionSchema: any = createSchema(
   {
     startDate: Type.date({ index: true, default: new Date().toISOString() }),
     endDate: Type.date({ index: true }),
-    responses: Type.array({ default: [], unique: true }).of(
+    responses: Type.array({ default: [] }).of(
       Type.ref(Type.objectId()).to('Response', ResponseSchema)
     ),
     state: Type.string({
