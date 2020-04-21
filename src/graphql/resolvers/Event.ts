@@ -18,6 +18,11 @@ export const existsEvent = async (eventId: string, Event: any) => {
 
 export default {
   Event: {
+    participations: async (
+      { _id: eventId }: any,
+      _: any,
+      { models: { Participation } }: Context
+    ) => await Participation.find({ event: eventId }),
     questions: async (
       { questions }: any,
       _: any,

@@ -16,6 +16,13 @@ export const existsUser = async (userId: string, User: any) => {
   if (!user) throw new Error('User not exists');
 };
 export default {
+  User: {
+    participations: async (
+      { _id: userId }: any,
+      _: any,
+      { models: { Participation } }: Context
+    ) => await Participation.find({ user: userId }),
+  },
   Query: {
     getUsers: async (_: any, __: any, { models: { User } }: Context) =>
       await User.find({ active: true }),

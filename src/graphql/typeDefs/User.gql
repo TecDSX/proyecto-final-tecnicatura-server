@@ -32,6 +32,7 @@ type User {
   state: UserStates!
   updatedAt: DateTime!
   createdAt: DateTime!
+  participations: [Participation]!
 }
 type Query {
   getUsers: [User]!
