@@ -15,6 +15,21 @@ export const existsUser = async (userId: string, User: any) => {
   const user = await User.findOne({ _id: userId, active: true });
   if (!user) throw new Error('User not exists');
 };
+const vinculeSubscribes = async (
+  userId: string,
+  Participation: any,
+  Event: any
+) => {
+  const participations = await Participation.find({ user: userId });
+  participations.map(async (participation: any) => {
+    pubsub.publish('subscribeParticipation', {
+      subscribeParticipation: participation,
+    });
+    const event = await Event.findOne({ _id: participation.event });
+    pubsub.publish('subscribeEvent', { subscribeEvent: event });
+  });
+};
+
 export default {
   User: {
     participations: async (
@@ -45,7 +60,7 @@ export default {
     setUserState: async (
       _: any,
       { state, userId }: SetUserStateInput,
-      { models: { User } }: Context
+      { models: { User, Participation, Event } }: Context
     ) => {
       await existsUser(userId, User);
       const user = await User.findOneAndUpdate(
@@ -56,6 +71,7 @@ export default {
       pubsub.publish('subscribeUser', {
         subscribeUser: user,
       });
+      vinculeSubscribes(userId, Participation, Event);
       return !!user || false;
     },
     createUser: async (
@@ -69,7 +85,7 @@ export default {
     updateUser: async (
       _: any,
       { input: { password, ...data }, userId }: UpdateUserInput,
-      { models: { User } }: Context
+      { models: { User, Participation, Event } }: Context
     ) => {
       await existsUser(userId, User);
       if (password) password = encrypt(password).toString();
@@ -82,12 +98,13 @@ export default {
       pubsub.publish('subscribeUser', {
         subscribeUser: user,
       });
+      vinculeSubscribes(userId, Participation, Event);
       return user;
     },
     deleteUser: async (
       _: any,
       { userId }: DeleteUserInput,
-      { models: { User } }: Context
+      { models: { User, Participation, Event } }: Context
     ) => {
       await existsUser(userId, User);
       const user = await User.findOneAndUpdate(
@@ -98,6 +115,7 @@ export default {
       pubsub.publish('subscribeUser', {
         subscribeUser: user,
       });
+      vinculeSubscribes(userId, Participation, Event);
       return !!user || false;
     },
   },
