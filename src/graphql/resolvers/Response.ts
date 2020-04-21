@@ -13,6 +13,7 @@ import { existsQuestion } from './Question';
 export const existsResponse = async (responseId: string, Response: any) => {
   const response = await Response.findById({ _id: responseId });
   if (!response) throw new Error('Response not exists');
+  return response;
 };
 export default {
   Response: {
@@ -42,35 +43,70 @@ export default {
         },
         { $addToSet: { responses: response._id } }
       );
+      const user = await User.findOne({ _id: userId });
+      const question = await Question.findOne({ _id: questionId });
+      pubsub.publish('subscribeUser', {
+        subscribeUser: user,
+      });
+      pubsub.publish('subscribeQuestion', {
+        subscribeQuestion: question,
+      });
       return response;
     },
 
     updateResponse: async (
       _: any,
       { input: { ...data }, responseId }: UpdateResponseInput,
-      { models: { Response } }: Context
+      { models: { Response, User, Question } }: Context
     ) => {
       await existsResponse(responseId, Response);
-      const responseUpdated = await Response.findOneAndUpdate(
+      const responseUpdated: any = await Response.findOneAndUpdate(
         { _id: responseId },
         { $set: data },
         (err, doc) => Promise.all([err, doc])
       );
+
+      const user = await User.findOne({ _id: responseUpdated.user });
+      const question = await Question.findOne({
+        _id: responseUpdated.question,
+      });
+
       pubsub.publish('subscribeResponse', {
         subscribeResponse: responseUpdated,
       });
+      pubsub.publish('subscribeUser', {
+        subscribeUser: user,
+      });
+      pubsub.publish('subscribeQuestion', {
+        subscribeQuestion: question,
+      });
+
       return responseUpdated;
     },
 
     deleteResponse: async (
       _: any,
       { responseId }: DeleteResponseInput,
-      { models: { Response } }: Context
+      { models: { Response, User, Question } }: Context
     ) => {
-      await existsResponse(responseId, Response);
+      const response: any = await existsResponse(responseId, Response);
       await Response.deleteOne({ _id: responseId });
+
+      const user = await User.findOne({ _id: response.user });
+      const question = await Question.findOneAndUpdate(
+        { responses: responseId },
+        { $pull: { responses: responseId } },
+        (err, doc) => Promise.all([err, doc])
+      );
+
       pubsub.publish('subscribeDeletedResponse', {
         subscribeDeletedResponse: { _id: responseId, deleted: true },
+      });
+      pubsub.publish('subscribeUser', {
+        subscribeUser: user,
+      });
+      pubsub.publish('subscribeQuestion', {
+        subscribeQuestion: question,
       });
       return true;
     },
