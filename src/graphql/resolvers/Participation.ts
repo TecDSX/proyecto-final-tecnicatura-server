@@ -92,7 +92,6 @@ export default {
       subscribe: withFilter(
         () => pubsub.asyncIterator('subscribeParticipation'),
         ({ subscribeParticipation: { _id } }, { participationId }) => {
-          console.log(participationId, _id);
           return String(participationId) === String(_id);
         }
       ),

@@ -116,7 +116,6 @@ export default {
       subscribe: withFilter(
         () => pubsub.asyncIterator('subscribeResponse'),
         ({ subscribeResponse: { _id } }, { responseId }) => {
-          console.log(responseId, _id);
           return String(responseId) === String(_id);
         }
       ),
@@ -125,7 +124,6 @@ export default {
       subscribe: withFilter(
         () => pubsub.asyncIterator('subscribeDeletedResponse'),
         ({ subscribeDeletedResponse: { _id } }, { responseId }) => {
-          console.log(responseId, _id);
           return String(responseId) === String(_id);
         }
       ),

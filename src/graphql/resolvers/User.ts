@@ -124,7 +124,6 @@ export default {
       subscribe: withFilter(
         () => pubsub.asyncIterator('subscribeUser'),
         ({ subscribeUser: { _id } }, { userId }) => {
-          console.log(userId, _id);
           return String(userId) === String(_id);
         }
       ),
