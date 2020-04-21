@@ -27,6 +27,10 @@ type Question {
   updatedAt: DateTime!
   createdAt: DateTime!
 }
+type DeleteQuestion {
+  _id: ID!
+  deleted: Boolean!
+}
 type Query {
   getQuestions: [Question]!
 }
@@ -35,4 +39,8 @@ type Mutation {
   createQuestion(input: CreateQuestionInput!): Question!
   updateQuestion(questionId: ID!, input: UpdateQuestionInput!): Question!
   deleteQuestion(eventId: ID!, questionId: ID!): Boolean!
+}
+type Subscription {
+  subscribeQuestion(questionId: ID!): Question!
+  subscribeDeleteQuestion(questionId: ID!): DeleteQuestion!
 }

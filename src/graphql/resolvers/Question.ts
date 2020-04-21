@@ -9,6 +9,8 @@ import {
 import { existsEvent } from './Event';
 import { dateGreaterOrEqualThanDate } from '../../utils/utils';
 import { Question } from '../../models/Question';
+import { withFilter } from 'graphql-yoga';
+import { pubsub } from '../pubsub';
 
 export const existsQuestion = async (questionId: string, Question: any) => {
   const question = await Question.findById({ _id: questionId });
@@ -43,11 +45,12 @@ export default {
       { models: { Question } }: Context
     ) => {
       await existsQuestion(questionId, Question);
-      const question = await Question.findByIdAndUpdate(
+      const question = await Question.findOneAndUpdate(
         { _id: questionId },
         { $set: { state } },
         (err, doc) => Promise.all([err, doc])
       );
+      pubsub.publish('subscribeQuestion', { subscribeQuestion: question });
       return !!question || false;
     },
 
@@ -60,12 +63,6 @@ export default {
       if (data.endDate.length <= 0) throw new Error('EndDate can not be null');
       if (!dateGreaterOrEqualThanDate(data.endDate, new Date().toString()))
         throw new Error('Event can not end in this date');
-      await Event.updateOne(
-        {
-          _id: eventId,
-        },
-        { questions: eventId }
-      );
       const question = await Question.create({ ...data });
       await Event.updateOne(
         {
@@ -89,11 +86,13 @@ export default {
       )
         throw new Error('Event can not end in this date');
       const questionData = data;
-      return await Question.findByIdAndUpdate(
+      const question = await Question.findByIdAndUpdate(
         { _id: questionId },
         { $set: questionData },
         (err, doc) => Promise.all([err, doc])
       );
+      pubsub.publish('subscribeQuestion', { subscribeQuestion: question });
+      return question;
     },
 
     deleteQuestion: async (
@@ -108,8 +107,29 @@ export default {
         { _id: eventId },
         { $pull: { questions: questionId } }
       );
+      pubsub.publish('subscribeDeleteQuestion', {
+        subscribeDeleteQuestion: { _id: questionId, deleted: true },
+      });
       await Question.deleteOne({ _id: questionId });
       return true;
+    },
+  },
+  Subscription: {
+    subscribeQuestion: {
+      subscribe: withFilter(
+        () => pubsub.asyncIterator('subscribeQuestion'),
+        ({ subscribeQuestion: { _id } }, { questionId }) => {
+          return String(_id) === String(questionId);
+        }
+      ),
+    },
+    subscribeDeleteQuestion: {
+      subscribe: withFilter(
+        () => pubsub.asyncIterator('subscribeDeleteQuestion'),
+        ({ subscribeDeleteQuestion: { _id } }, { questionId }) => {
+          return String(_id) === String(questionId);
+        }
+      ),
     },
   },
 };
