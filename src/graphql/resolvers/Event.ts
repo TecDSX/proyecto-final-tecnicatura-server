@@ -18,6 +18,21 @@ export const existsEvent = async (eventId: string, Event: any) => {
     throw new Error('You can not update finished o canceled Events');
 };
 
+const vinculeSubscribes = async (
+  eventId: string,
+  Participation: any,
+  User: any
+) => {
+  const participations = await Participation.find({ event: eventId });
+  participations.map(async (participation: any) => {
+    pubsub.publish('subscribeParticipation', {
+      subscribeParticipation: participation,
+    });
+    const user = await User.findOne({ _id: participation.user });
+    pubsub.publish('subscribeUser', { subscribeUser: user });
+  });
+};
+
 export default {
   Event: {
     participations: async (
@@ -44,7 +59,7 @@ export default {
     setEventState: async (
       _: any,
       { state, eventId }: SetEventStateInput,
-      { models: { Event } }: Context
+      { models: { Event, Participation, User } }: Context
     ) => {
       await existsEvent(eventId, Event);
       const event = await Event.findOneAndUpdate(
@@ -52,6 +67,9 @@ export default {
         { $set: { state } },
         (err: any, doc: any) => Promise.all([err, doc])
       );
+
+      vinculeSubscribes(eventId, Participation, User);
+
       pubsub.publish('subscribeEvent', { subscribeEvent: event });
       return !!event || false;
     },
@@ -59,7 +77,7 @@ export default {
     createEvent: async (
       _: any,
       { input: { ...data } }: CreateEventInput,
-      { models: { Event } }: Context
+      { models: { Event, Participation, User } }: Context
     ) => {
       if (data.start && data.start.length <= 0)
         throw new Error('StartDate can not be null');
@@ -77,13 +95,12 @@ export default {
         )
       )
         throw new Error('Event can not end in this date');
-      return await Event.create({ ...data });
     },
 
     updateEvent: async (
       _: any,
       { input: { ...data }, eventId }: UpdateEventInput,
-      { models: { Event } }: Context
+      { models: { Event, Participation, User } }: Context
     ) => {
       await existsEvent(eventId, Event);
       if (data.start && data.start.length <= 0)
@@ -110,6 +127,9 @@ export default {
         { $set: eventData },
         (err: any, doc: any) => Promise.all([err, doc])
       );
+
+      vinculeSubscribes(eventId, Participation, User);
+
       pubsub.publish('subscribeEvent', { subscribeEvent: event });
       return event;
     },
@@ -117,7 +137,7 @@ export default {
     deleteEvent: async (
       _: any,
       { eventId }: DeleteEventInput,
-      { models: { Event } }: Context
+      { models: { Event, Participation, User } }: Context
     ) => {
       await existsEvent(eventId, Event);
       const event = await Event.findOneAndUpdate(
@@ -126,6 +146,8 @@ export default {
         (err, doc) => Promise.all([err, doc])
       );
       pubsub.publish('subscribeEvent', { subscribeEvent: event });
+      vinculeSubscribes(eventId, Participation, User);
+
       return !!event || false;
     },
   },
