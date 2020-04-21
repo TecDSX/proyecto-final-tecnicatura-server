@@ -1,5 +1,7 @@
 /* eslint-disable no-unused-vars */
 import { Context } from '../context';
+import { pubsub } from '../pubsub';
+import { withFilter } from 'graphql-yoga';
 import {
   CreateResponseInput,
   UpdateResponseInput,
@@ -49,11 +51,15 @@ export default {
       { models: { Response } }: Context
     ) => {
       await existsResponse(responseId, Response);
-      return await Response.findOneAndUpdate(
+      const responseUpdated = await Response.findOneAndUpdate(
         { _id: responseId },
         { $set: data },
         (err, doc) => Promise.all([err, doc])
       );
+      pubsub.publish('subscribeResponse', {
+        subscribeResponse: responseUpdated,
+      });
+      return responseUpdated;
     },
 
     deleteResponse: async (
@@ -63,7 +69,30 @@ export default {
     ) => {
       await existsResponse(responseId, Response);
       await Response.deleteOne({ _id: responseId });
+      pubsub.publish('subscribeDeletedResponse', {
+        subscribeDeletedResponse: { _id: responseId, deleted: true },
+      });
       return true;
+    },
+  },
+  Subscription: {
+    subscribeResponse: {
+      subscribe: withFilter(
+        () => pubsub.asyncIterator('subscribeResponse'),
+        ({ subscribeResponse: { _id } }, { responseId }) => {
+          console.log(responseId, _id);
+          return String(responseId) === String(_id);
+        }
+      ),
+    },
+    subscribeDeletedResponse: {
+      subscribe: withFilter(
+        () => pubsub.asyncIterator('subscribeDeletedResponse'),
+        ({ subscribeDeletedResponse: { _id } }, { responseId }) => {
+          console.log(responseId, _id);
+          return String(responseId) === String(_id);
+        }
+      ),
     },
   },
 };
